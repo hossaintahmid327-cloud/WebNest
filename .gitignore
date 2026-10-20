@@ -1,0 +1,7 @@
+node_modules/
+.env
+webnest.db
+webnest.db-journal
+storage/websites/
+npm-debug.log*
+.DS_Store
