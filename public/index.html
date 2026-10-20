@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebNest — Create. Host. Manage.</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --bg: #0b1120;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --primary-light: rgba(56, 189, 248, 0.12);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; border: none; outline: none; }
+
+    /* Header & Navigation */
+    header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .brand svg { fill: var(--primary); }
+    .nav-actions { display: flex; align-items: center; gap: 0.75rem; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: var(--primary); color: #ffffff; }
+    [data-theme="dark"] .btn-primary { color: #0f172a; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+    .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--card-border); }
+    .btn-secondary:hover:not(:disabled) { background: var(--primary-light); }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover:not(:disabled) { background: var(--danger-hover); }
+    .btn-icon { padding: 0.5rem; border-radius: 50%; background: transparent; color: var(--text); }
+    .btn-icon:hover { background: var(--card-border); }
+
+    /* Layout Containers */
+    main { flex: 1; max-width: 1200px; width: 100%; margin: 0 auto; padding: 2rem 1.5rem; }
+    .hidden { display: none !important; }
+
+    /* Landing Page */
+    .hero {
+      text-align: center;
+      padding: 4rem 1rem 3rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .hero-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 { font-size: 3rem; font-weight: 800; line-height: 1.15; margin-bottom: 1rem; }
+    .hero p { font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2rem; }
+    .hero-buttons { display: flex; gap: 1rem; justify-content: center; }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 4rem;
+    }
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      box-shadow: var(--shadow);
+    }
+    .feature-card h3 { font-size: 1.125rem; margin: 0.75rem 0 0.5rem; font-weight: 600; }
+    .feature-card p { font-size: 0.875rem; color: var(--text-muted); }
+
+    /* Dashboard Metrics */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+    .metric-card .title { font-size: 0.875rem; color: var(--text-muted); font-weight: 500; }
+    .metric-card .value { font-size: 1.75rem; font-weight: 700; margin-top: 0.5rem; }
+
+    /* Content Area & Controls */
+    .dashboard-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .filter-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.75rem;
+      width: 100%;
+      max-width: 600px;
+    }
+    .search-input, .select-input {
+      padding: 0.55rem 0.85rem;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 0.875rem;
+      outline: none;
+    }
+    .search-input { flex: 1; min-width: 180px; }
+    .select-input { cursor: pointer; }
+
+    /* Website Cards Grid */
+    .websites-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    .site-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+    .site-card-top {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+    .site-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: var(--primary-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+    }
+    .site-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .site-meta { flex: 1; min-width: 0; }
+    .site-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .site-url {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 0.2rem;
+    }
+    .status-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      margin-top: 0.4rem;
+    }
+    .badge-published { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .badge-draft { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+    .site-card-actions {
+      display: flex;
+      gap: 0.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--card-border);
+    }
+    .site-card-actions .btn { flex: 1; font-size: 0.8rem; padding: 0.45rem 0.5rem; }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 1.5rem;
+    }
+    .modal {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+    }
+    .modal-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.25rem; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.4rem; }
+    .form-control {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.875rem;
+      outline: none;
+    }
+    .form-control:focus { border-color: var(--primary); }
+    .file-dropzone {
+      border: 2px dashed var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      background: var(--bg);
+      cursor: pointer;
+      position: relative;
+    }
+    .file-dropzone input[type="file"] {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .file-dropzone-info { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem; }
+
+    /* Preview Bar */
+    .preview-box {
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .preview-img {
+      width: 40px; height: 40px; border-radius: 6px;
+      border: 1px solid var(--card-border);
+      object-fit: cover;
+    }
+
+    /* Toast Notification */
+    #toast-container {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .toast {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1.25rem;
+      box-shadow: var(--shadow-lg);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      animation: slideIn 0.2s ease-out;
+    }
+    .toast-error { border-left: 4px solid var(--danger); }
+    .toast-success { border-left: 4px solid var(--success); }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 2.25rem; }
+      .site-card-actions { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <div class="nav-container">
+      <div class="brand">
+        <svg width="24" height="24" viewBox="0 0 24 24">
+          <path d="M12 2L2 12h3v8h6v-6h2v6h6v-8h3L12 2z"/>
+        </svg>
+        <span>WebNest</span>
+      </div>
+
+      <div class="nav-actions">
+        <button id="themeToggleBtn" class="btn-icon" aria-label="Toggle Theme" title="Toggle Theme">
+          <svg id="themeIcon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+          </svg>
+        </button>
+
+        <!-- Guest Menu -->
+        <div id="guestMenu" class="nav-actions">
+          <button id="navLoginBtn" class="btn btn-secondary">Log In</button>
+          <button id="navSignupBtn" class="btn btn-primary">Get Started</button>
+        </div>
+
+        <!-- Authenticated Menu -->
+        <div id="authMenu" class="nav-actions hidden">
+          <button id="navCreateBtn" class="btn btn-primary">+ Create Website</button>
+          <button id="navProfileBtn" class="btn btn-secondary">Profile</button>
+          <button id="navLogoutBtn" class="btn btn-secondary">Logout</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Landing View -->
+    <section id="landingView">
+      <div class="hero">
+        <div class="hero-badge">Create. Host. Manage.</div>
+        <h1>Deploy Single-File HTML Websites in Seconds</h1>
+        <p>WebNest is a simple self-service HTML website hosting platform. Upload your standalone HTML file and get a production-ready URL instantly.</p>
+        <div class="hero-buttons">
+          <button id="heroGetStartedBtn" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-size: 1rem;">Get Started Free</button>
+          <button id="heroLoginBtn" class="btn btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 1rem;">Log In</button>
+        </div>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <h3>Single HTML Hosting</h3>
+          <p>Designed specifically for self-contained single-file HTML sites including embedded CSS, scripts, and media.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Automatic URL Generation</h3>
+          <p>Never worry about URL conflicts. WebNest assigns a clean, unique URL immediately upon publishing.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Custom Branding</h3>
+          <p>Give your project an identifiable name and preview logo URL to keep your websites organized.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Robust Isolation</h3>
+          <p>Websites are safely served with strict sandboxing and cookie segregation to keep user accounts secure.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Full File Control</h3>
+          <p>Need to update your website? Replace your HTML file at any time with zero downtime.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Mobile Friendly</h3>
+          <p>Manage your websites smoothly across mobile phones, tablets, and desktop workstations.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dashboard View -->
+    <section id="dashboardView" class="hidden">
+      <!-- Real Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="title">Total Websites</div>
+          <div class="value" id="metricTotal">0</div>
+        </div>
+        <div class="metric-card">
+          <div class="title">Published Websites</div>
+          <div class="value" id="metricPublished">0</div>
+        </div>
+        <div class="metric-card">
+          <div class="title">Draft Websites</div>
+          <div class="value" id="metricDraft">0</div>
+        </div>
+        <div class="metric-card">
+          <div class="title">Last Updated</div>
+          <div class="value" id="metricUpdated" style="font-size: 1rem; margin-top: 0.85rem;">—</div>
+        </div>
+      </div>
+
+      <!-- Controls & Header -->
+      <div class="dashboard-header">
+        <h2>My Websites</h2>
+        <div class="filter-controls">
+          <input type="text" id="searchInput" class="search-input" placeholder="Search by name or slug...">
+          <select id="sortSelect" class="select-input">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="name_asc">Name A-Z</option>
+            <option value="name_desc">Name Z-A</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Websites Card List -->
+      <div id="websitesGrid" class="websites-grid"></div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden" style="text-align: center; padding: 4rem 1rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">No websites yet.</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Create your first single-file HTML website and have it live in seconds.</p>
+        <button id="emptyCreateBtn" class="btn btn-primary">+ Create Your First Website</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Create / Edit Website Modal -->
+  <div id="siteModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <h2 id="siteModalTitle" class="modal-title">Create Website</h2>
+      <form id="siteForm">
+        <input type="hidden" id="editSiteId">
+        
+        <div class="form-group">
+          <label for="siteName">Website Name *</label>
+          <input type="text" id="siteName" class="form-control" placeholder="e.g. My Portfolio" required maxlength="100">
+        </div>
+
+        <div class="form-group">
+          <label for="siteLogo">Logo URL (Optional)</label>
+          <input type="url" id="siteLogo" class="form-control" placeholder="https://example.com/logo.png">
+          <div class="preview-box">
+            <img id="logoPreview" class="preview-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%2394a3b8' d='M12 2L2 12h3v8h6v-6h2v6h6v-8h3L12 2z'/%3E%3C/svg%3E" alt="Preview">
+            <span style="font-size: 0.75rem; color: var(--text-muted);">Logo Preview</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label id="fileUploadLabel">Upload HTML File (.html) *</label>
+          <div class="file-dropzone" id="fileDropzone">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto; color: var(--text-muted);">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <div id="fileNameDisplay" style="font-weight: 600; margin-top: 0.5rem;">Click or drag HTML file here</div>
+            <div class="file-dropzone-info" id="fileSizeDisplay">Only single .html file up to 5MB</div>
+            <input type="file" id="siteFile" accept=".html,.htm">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+          <button type="button" id="siteModalCancelBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="siteModalSubmitBtn" class="btn btn-primary">Publish Website</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Auth Modal (Signup / Login) -->
+  <div id="authModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <h2 id="authModalTitle" class="modal-title">Log In</h2>
+      <form id="authForm">
+        <div id="signupOnlyFields" class="hidden">
+          <div class="form-group">
+            <label for="regFullName">Full Name *</label>
+            <input type="text" id="regFullName" class="form-control" placeholder="John Doe">
+          </div>
+          <div class="form-group">
+            <label for="regEmail">Email Address *</label>
+            <input type="email" id="regEmail" class="form-control" placeholder="john@example.com">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label id="authIdentLabel" for="authIdent">Email or Username *</label>
+          <input type="text" id="authIdent" class="form-control" placeholder="Enter username or email" required>
+        </div>
+
+        <div class="form-group">
+          <label for="authPassword">Password *</label>
+          <input type="password" id="authPassword" class="form-control" placeholder="Enter password (min 8 chars)" required minlength="8">
+        </div>
+
+        <div id="confirmPassGroup" class="form-group hidden">
+          <label for="authConfirmPassword">Confirm Password *</label>
+          <input type="password" id="authConfirmPassword" class="form-control" placeholder="Confirm your password">
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+          <button type="button" id="authModalCancelBtn" class="btn btn-secondary">Cancel</button>
+          <button type="submit" id="authModalSubmitBtn" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal-backdrop hidden">
+    <div class="modal">
+      <h2 class="modal-title">Your Profile</h2>
+      <div style="margin-bottom: 1.5rem; font-size: 0.875rem;">
+        <p><strong>Username:</strong> <span id="profUsername">—</span></p>
+        <p><strong>Email:</strong> <span id="profEmail">—</span></p>
+        <p><strong>Joined:</strong> <span id="profJoined">—</span></p>
+      </div>
+
+      <form id="updateProfileForm" style="margin-bottom: 2rem;">
+        <div class="form-group">
+          <label for="profFullName">Update Full Name</label>
+          <input type="text" id="profFullName" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Save Profile</button>
+      </form>
+
+      <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem;">Change Password</h3>
+      <form id="changePasswordForm">
+        <div class="form-group">
+          <label for="passCurrent">Current Password</label>
+          <input type="password" id="passCurrent" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label for="passNew">New Password</label>
+          <input type="password" id="passNew" class="form-control" required minlength="8">
+        </div>
+        <div class="form-group">
+          <label for="passConfirm">Confirm New Password</label>
+          <input type="password" id="passConfirm" class="form-control" required>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button type="button" id="profileModalCloseBtn" class="btn btn-secondary" style="flex: 1;">Close</button>
+          <button type="submit" class="btn btn-primary" style="flex: 1;">Update Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Stack -->
+  <div id="toast-container"></div>
+
+  <!-- Vanilla Application Logic -->
+  <script>
+    (function () {
+      // -----------------------------------------------------------------------
+      // State Management
+      // -----------------------------------------------------------------------
+      let currentUser = null;
+      let userWebsites = [];
+      let isSignUpMode = false;
+      const DEFAULT_ICON = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%2394a3b8' d='M12 2L2 12h3v8h6v-6h2v6h6v-8h3L12 2z'/%3E%3C/svg%3E";
+
+      // -----------------------------------------------------------------------
+      // DOM Elements
+      // -----------------------------------------------------------------------
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+      const guestMenu = document.getElementById('guestMenu');
+      const authMenu = document.getElementById('authMenu');
+      const landingView = document.getElementById('landingView');
+      const dashboardView = document.getElementById('dashboardView');
+      
+      const navLoginBtn = document.getElementById('navLoginBtn');
+      const navSignupBtn = document.getElementById('navSignupBtn');
+      const heroGetStartedBtn = document.getElementById('heroGetStartedBtn');
+      const heroLoginBtn = document.getElementById('heroLoginBtn');
+      const navCreateBtn = document.getElementById('navCreateBtn');
+      const emptyCreateBtn = document.getElementById('emptyCreateBtn');
+      const navProfileBtn = document.getElementById('navProfileBtn');
+      const navLogoutBtn = document.getElementById('navLogoutBtn');
+
+      // Modals
+      const authModal = document.getElementById('authModal');
+      const authModalTitle = document.getElementById('authModalTitle');
+      const authForm = document.getElementById('authForm');
+      const signupOnlyFields = document.getElementById('signupOnlyFields');
+      const confirmPassGroup = document.getElementById('confirmPassGroup');
+      const authModalCancelBtn = document.getElementById('authModalCancelBtn');
+      const authModalSubmitBtn = document.getElementById('authModalSubmitBtn');
+
+      const siteModal = document.getElementById('siteModal');
+      const siteModalTitle = document.getElementById('siteModalTitle');
+      const siteForm = document.getElementById('siteForm');
+      const editSiteId = document.getElementById('editSiteId');
+      const siteName = document.getElementById('siteName');
+      const siteLogo = document.getElementById('siteLogo');
+      const logoPreview = document.getElementById('logoPreview');
+      const siteFile = document.getElementById('siteFile');
+      const fileNameDisplay = document.getElementById('fileNameDisplay');
+      const fileSizeDisplay = document.getElementById('fileSizeDisplay');
+      const fileUploadLabel = document.getElementById('fileUploadLabel');
+      const siteModalCancelBtn = document.getElementById('siteModalCancelBtn');
+      const siteModalSubmitBtn = document.getElementById('siteModalSubmitBtn');
+
+      const profileModal = document.getElementById('profileModal');
+      const profileModalCloseBtn = document.getElementById('profileModalCloseBtn');
+      const updateProfileForm = document.getElementById('updateProfileForm');
+      const changePasswordForm = document.getElementById('changePasswordForm');
+
+      const searchInput = document.getElementById('searchInput');
+      const sortSelect = document.getElementById('sortSelect');
+      const websitesGrid = document.getElementById('websitesGrid');
+      const emptyState = document.getElementById('emptyState');
+
+      // Metric elements
+      const metricTotal = document.getElementById('metricTotal');
+      const metricPublished = document.getElementById('metricPublished');
+      const metricDraft = document.getElementById('metricDraft');
+      const metricUpdated = document.getElementById('metricUpdated');
+
+      // -----------------------------------------------------------------------
+      // Utilities & Notifications
+      // -----------------------------------------------------------------------
+      function showToast(message, type = 'success') {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type === 'error' ? 'toast-error' : 'toast-success'}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          setTimeout(() => toast.remove(), 200);
+        }, 4000);
+      }
+
+      function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      function formatBytes(bytes) {
+        if (!bytes) return '0 Bytes';
+        const k = 1024;
+        const dm = 2;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+      }
+
+      // -----------------------------------------------------------------------
+      // Theme Controller (Light / Dark)
+      // -----------------------------------------------------------------------
+      function initTheme() {
+        const savedTheme = localStorage.getItem('webnest_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      }
+      themeToggleBtn.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('webnest_theme', next);
+      });
+      initTheme();
+
+      // -----------------------------------------------------------------------
+      // Session Management & API Calls
+      // -----------------------------------------------------------------------
+      async function apiFetch(endpoint, options = {}) {
+        try {
+          const res = await fetch(endpoint, options);
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            throw new Error(data.error || 'Request failed. Please try again.');
+          }
+          return data;
+        } catch (err) {
+          throw err;
+        }
+      }
+
+      async function checkAuthSession() {
+        try {
+          const res = await fetch('/api/auth/me');
+          if (res.ok) {
+            const data = await res.json();
+            currentUser = data.user;
+            renderAuthUI();
+            loadWebsites();
+          } else {
+            currentUser = null;
+            renderGuestUI();
+          }
+        } catch (_) {
+          currentUser = null;
+          renderGuestUI();
+        }
+      }
+
+      function renderAuthUI() {
+        guestMenu.classList.add('hidden');
+        authMenu.classList.remove('hidden');
+        landingView.classList.add('hidden');
+        dashboardView.classList.remove('hidden');
+      }
+
+      function renderGuestUI() {
+        guestMenu.classList.remove('hidden');
+        authMenu.classList.add('hidden');
+        landingView.classList.remove('hidden');
+        dashboardView.classList.add('hidden');
+      }
+
+      // -----------------------------------------------------------------------
+      // Websites & Metrics Management
+      // -----------------------------------------------------------------------
+      async function loadWebsites() {
+        try {
+          const query = new URLSearchParams({
+            search: searchInput.value,
+            sort: sortSelect.value
+          }).toString();
+
+          const data = await apiFetch(`/api/websites?${query}`);
+          userWebsites = data.websites || [];
+          renderDashboardMetrics();
+          renderWebsitesGrid();
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      }
+
+      function renderDashboardMetrics() {
+        metricTotal.textContent = userWebsites.length;
+        const pubCount = userWebsites.filter(w => w.status === 'Published').length;
+        metricPublished.textContent = pubCount;
+        metricDraft.textContent = userWebsites.length - pubCount;
+
+        if (userWebsites.length > 0) {
+          const latest = [...userWebsites].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))[0];
+          metricUpdated.textContent = new Date(latest.updated_at).toLocaleDateString(undefined, {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+          });
+        } else {
+          metricUpdated.textContent = '—';
+        }
+      }
+
+      function renderWebsitesGrid() {
+        websitesGrid.innerHTML = '';
+        if (userWebsites.length === 0) {
+          emptyState.classList.remove('hidden');
+          return;
+        }
+        emptyState.classList.add('hidden');
+
+        userWebsites.forEach(site => {
+          const card = document.createElement('div');
+          card.className = 'site-card';
+
+          const logoSrc = site.logo_url ? escapeHtml(site.logo_url) : DEFAULT_ICON;
+          const statusClass = site.status === 'Published' ? 'badge-published' : 'badge-draft';
+
+          card.innerHTML = `
+            <div class="site-card-top">
+              <div class="site-logo">
+                <img src="${logoSrc}" alt="${escapeHtml(site.name)}" onerror="this.src='${DEFAULT_ICON}'">
+              </div>
+              <div class="site-meta">
+                <div class="site-title" title="${escapeHtml(site.name)}">${escapeHtml(site.name)}</div>
+                <div class="site-url" title="${escapeHtml(site.published_url || '')}">
+                  ${escapeHtml(site.published_url || 'Generating URL...')}
+                </div>
+                <span class="status-badge ${statusClass}">${escapeHtml(site.status)}</span>
+              </div>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+              Updated: ${new Date(site.updated_at).toLocaleDateString()}
+            </div>
+            <div class="site-card-actions">
+              <a href="/sites/${escapeHtml(site.slug)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">View</a>
+              <button class="btn btn-secondary edit-site-btn" data-id="${site.id}">Edit</button>
+              <button class="btn btn-danger delete-site-btn" data-id="${site.id}">Delete</button>
+            </div>
+          `;
+          websitesGrid.appendChild(card);
+        });
+
+        // Bind Edit buttons
+        document.querySelectorAll('.edit-site-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => openEditModal(e.target.dataset.id));
+        });
+
+        // Bind Delete buttons
+        document.querySelectorAll('.delete-site-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => handleDeleteSite(e.target.dataset.id));
+        });
+      }
+
+      // -----------------------------------------------------------------------
+      // Modal Forms: Create / Edit Website
+      // -----------------------------------------------------------------------
+      function openCreateModal() {
+        siteForm.reset();
+        editSiteId.value = '';
+        siteModalTitle.textContent = 'Create Website';
+        siteModalSubmitBtn.textContent = 'Publish Website';
+        fileUploadLabel.textContent = 'Upload HTML File (.html) *';
+        siteFile.required = true;
+        fileNameDisplay.textContent = 'Click or drag HTML file here';
+        fileSizeDisplay.textContent = 'Only single .html file up to 5MB';
+        logoPreview.src = DEFAULT_ICON;
+        siteModal.classList.remove('hidden');
+      }
+
+      function openEditModal(id) {
+        const site = userWebsites.find(w => String(w.id) === String(id));
+        if (!site) return;
+
+        siteForm.reset();
+        editSiteId.value = site.id;
+        siteModalTitle.textContent = 'Edit Website';
+        siteModalSubmitBtn.textContent = 'Save Changes';
+        fileUploadLabel.textContent = 'Replace HTML File (.html) (Optional)';
+        siteFile.required = false;
+        siteName.value = site.name;
+        siteLogo.value = site.logo_url || '';
+        logoPreview.src = site.logo_url || DEFAULT_ICON;
+        fileNameDisplay.textContent = 'Current HTML file active';
+        fileSizeDisplay.textContent = 'Select a new .html file to replace it';
+        siteModal.classList.remove('hidden');
+      }
+
+      siteLogo.addEventListener('input', () => {
+        const val = siteLogo.value.trim();
+        if (val.startsWith('http://') || val.startsWith('https://')) {
+          logoPreview.src = val;
+        } else {
+          logoPreview.src = DEFAULT_ICON;
+        }
+      });
+      logoPreview.addEventListener('error', () => {
+        logoPreview.src = DEFAULT_ICON;
+      });
+
+      siteFile.addEventListener('change', () => {
+        if (siteFile.files.length > 0) {
+          const file = siteFile.files[0];
+          if (!file.name.toLowerCase().endsWith('.html') && !file.name.toLowerCase().endsWith('.htm')) {
+            showToast('Only single .html files are permitted.', 'error');
+            siteFile.value = '';
+            fileNameDisplay.textContent = 'Click or drag HTML file here';
+            return;
+          }
+          fileNameDisplay.textContent = file.name;
+          fileSizeDisplay.textContent = formatBytes(file.size);
+        }
+      });
+
+      siteModalCancelBtn.addEventListener('click', () => siteModal.classList.add('hidden'));
+
+      siteForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = editSiteId.value;
+        const formData = new FormData();
+        formData.append('name', siteName.value.trim());
+        if (siteLogo.value.trim()) {
+          formData.append('logo_url', siteLogo.value.trim());
+        }
+        if (siteFile.files.length > 0) {
+          formData.append('html_file', siteFile.files[0]);
+        }
+
+        const isEdit = Boolean(id);
+        const submitBtn = siteModalSubmitBtn;
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = isEdit ? 'Saving...' : 'Publishing...';
+
+        try {
+          const endpoint = isEdit ? `/api/websites/${id}` : '/api/websites';
+          const method = isEdit ? 'PUT' : 'POST';
+
+          const res = await fetch(endpoint, {
+            method: method,
+            body: formData
+          });
+
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Operation failed.');
+
+          showToast(data.message || 'Website saved successfully.');
+          siteModal.classList.add('hidden');
+          loadWebsites();
+        } catch (err) {
+          showToast(err.message, 'error');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      });
+
+      async function handleDeleteSite(id) {
+        if (!confirm('Are you sure you want to delete this website? This action cannot be undone.')) {
+          return;
+        }
+        try {
+          const res = await apiFetch(`/api/websites/${id}`, { method: 'DELETE' });
+          showToast(res.message);
+          loadWebsites();
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      }
+
+      // -----------------------------------------------------------------------
+      // Auth Modal (Login / Sign Up)
+      // -----------------------------------------------------------------------
+      function openAuthModal(signUp = false) {
+        isSignUpMode = signUp;
+        authForm.reset();
+        authModalTitle.textContent = signUp ? 'Create an Account' : 'Log In';
+        authModalSubmitBtn.textContent = signUp ? 'Sign Up' : 'Log In';
+        document.getElementById('authIdentLabel').textContent = signUp ? 'Username *' : 'Email or Username *';
+
+        if (signUp) {
+          signupOnlyFields.classList.remove('hidden');
+          confirmPassGroup.classList.remove('hidden');
+          document.getElementById('regFullName').required = true;
+          document.getElementById('regEmail').required = true;
+          document.getElementById('authConfirmPassword').required = true;
+        } else {
+          signupOnlyFields.classList.add('hidden');
+          confirmPassGroup.classList.add('hidden');
+          document.getElementById('regFullName').required = false;
+          document.getElementById('regEmail').required = false;
+          document.getElementById('authConfirmPassword').required = false;
+        }
+        authModal.classList.remove('hidden');
+      }
+
+      authModalCancelBtn.addEventListener('click', () => authModal.classList.add('hidden'));
+
+      authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = authModalSubmitBtn;
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = isSignUpMode ? 'Signing up...' : 'Logging in...';
+
+        try {
+          if (isSignUpMode) {
+            const body = {
+              full_name: document.getElementById('regFullName').value.trim(),
+              username: document.getElementById('authIdent').value.trim(),
+              email: document.getElementById('regEmail').value.trim(),
+              password: document.getElementById('authPassword').value,
+              confirm_password: document.getElementById('authConfirmPassword').value
+            };
+            const data = await apiFetch('/api/auth/signup', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body)
+            });
+            currentUser = data.user;
+            showToast('Account registered successfully!');
+          } else {
+            const body = {
+              identifier: document.getElementById('authIdent').value.trim(),
+              password: document.getElementById('authPassword').value
+            };
+            const data = await apiFetch('/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body)
+            });
+            currentUser = data.user;
+            showToast('Welcome back!');
+          }
+
+          authModal.classList.add('hidden');
+          renderAuthUI();
+          loadWebsites();
+        } catch (err) {
+          showToast(err.message, 'error');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      });
+
+      // -----------------------------------------------------------------------
+      // Profile Management Modal
+      // -----------------------------------------------------------------------
+      navProfileBtn.addEventListener('click', () => {
+        if (!currentUser) return;
+        document.getElementById('profUsername').textContent = currentUser.username;
+        document.getElementById('profEmail').textContent = currentUser.email;
+        document.getElementById('profJoined').textContent = new Date(currentUser.created_at).toLocaleDateString();
+        document.getElementById('profFullName').value = currentUser.full_name;
+        changePasswordForm.reset();
+        profileModal.classList.remove('hidden');
+      });
+
+      profileModalCloseBtn.addEventListener('click', () => profileModal.classList.add('hidden'));
+
+      updateProfileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+          const res = await apiFetch('/api/auth/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ full_name: document.getElementById('profFullName').value.trim() })
+          });
+          currentUser = res.user;
+          showToast('Profile updated successfully.');
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      });
+
+      changePasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const curr = document.getElementById('passCurrent').value;
+        const next = document.getElementById('passNew').value;
+        const conf = document.getElementById('passConfirm').value;
+
+        if (next !== conf) {
+          showToast('New passwords do not match.', 'error');
+          return;
+        }
+
+        try {
+          const res = await apiFetch('/api/auth/change-password', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ current_password: curr, new_password: next, confirm_password: conf })
+          });
+          showToast(res.message);
+          changePasswordForm.reset();
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      });
+
+      // -----------------------------------------------------------------------
+      // Logout
+      // -----------------------------------------------------------------------
+      navLogoutBtn.addEventListener('click', async () => {
+        try {
+          await apiFetch('/api/auth/logout', { method: 'POST' });
+          currentUser = null;
+          showToast('Logged out successfully.');
+          renderGuestUI();
+        } catch (err) {
+          showToast(err.message, 'error');
+        }
+      });
+
+      // -----------------------------------------------------------------------
+      // Search & Sorting Listeners
+      // -----------------------------------------------------------------------
+      let searchTimeout;
+      searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => loadWebsites(), 300);
+      });
+      sortSelect.addEventListener('change', () => loadWebsites());
+
+      // -----------------------------------------------------------------------
+      // Global Event Bindings
+      // -----------------------------------------------------------------------
+      navLoginBtn.addEventListener('click', () => openAuthModal(false));
+      heroLoginBtn.addEventListener('click', () => openAuthModal(false));
+      navSignupBtn.addEventListener('click', () => openAuthModal(true));
+      heroGetStartedBtn.addEventListener('click', () => openAuthModal(true));
+      navCreateBtn.addEventListener('click', openCreateModal);
+      emptyCreateBtn.addEventListener('click', openCreateModal);
+
+      // Initialize Application
+      checkAuthSession();
+    })();
+  </script>
+</body>
+</html>
